@@ -27,18 +27,17 @@
 % contPlot % Update plot on each step?
 %
 % Models
-% Gareth1D
+% Delta1D
 % Acc noise only, 1 direction. Stim noise in delta.
-% Gareth2D
+% Delta2D
 % Acc noise only, 2 directions. Stim noise in delta.
 % BB1D
 % Acc noise, 1 direction. Stim noise applied to delted in model;
 % BB2D
 % Acc noise, 2 direction. Stim noise applied to delted in model;
 
-classdef DD < handle 
+classdef DD < handle
     properties
-        % Can I refer to inputs here? Presumably not
         model % Model to use
         func % Eq for model
         seed % Simple value for seed
@@ -84,11 +83,11 @@ classdef DD < handle
             obj.initialParams = params;
             
             % Has number of iterations been specified?
-                if isfield(params, 'its')
-                    obj.its = params.its;
-                else % Default 500
-                    obj.its = 500;
-                end
+            if isfield(params, 'its')
+                obj.its = params.its;
+            else % Default 500
+                obj.its = 500;
+            end
             
             % If a fig is specified in params, plot there
             if isfield(params, 'fig') ...
@@ -99,7 +98,7 @@ classdef DD < handle
                 % If no figure is specified, do nothing; create if .plotDD
                 % is called
             end
-
+            
             % Has contPlot been specified?
             if isfield(params, 'contPlot')
                 obj.contPlot = params.contPlot;
@@ -129,7 +128,7 @@ classdef DD < handle
                 obj.model = params.model;
             else
                 % Set default model
-                obj.model = 'Gareth1D';
+                obj.model = 'Delta1D';
             end
             
             % Set common params
@@ -157,7 +156,7 @@ classdef DD < handle
                     obj.func = 'a(t) = aLam * a(t-1) + aNoise(t)';
                     params.dims = 1;
                     
-                case 'Gareth1D'
+                case 'Delta1D'
                     % Accumulator noise only, stim input (1D)
                     % aMu, aSig, aLam; already set
                     % delta1; set
@@ -175,7 +174,7 @@ classdef DD < handle
                     obj.sNoise1 = zeros(1, obj.its);
                     obj.sNoise2 = NaN(1, obj.its);
                     
-                case 'Gareth2D'
+                case 'Delta2D'
                     % Accumulator noise only, stim input (2D)
                     % Stim noise accounted for in delta
                     % aMu, aSig, aLam; already set
@@ -302,22 +301,22 @@ classdef DD < handle
                     obj.outputDecBound = ...
                         linspace(obj.decBound, 0, obj.its);
                 case 'ExpDecay'
-                     if isfield(params, 'decBound')
+                    if isfield(params, 'decBound')
                         obj.decBound = params.decBound;
                     else
                         % Set default
                         obj.decBound = 10;
-                     end
-                     if isfield(params, 'expDecBoundScale')
-                         obj.expDecBoundScale = params.expDecBoundScale;
-                     else
-                         % Set default
-                         obj.expDecBoundScale = 10;
-                     end
-                     % Not yet working
+                    end
+                    if isfield(params, 'expDecBoundScale')
+                        obj.expDecBoundScale = params.expDecBoundScale;
+                    else
+                        % Set default
+                        obj.expDecBoundScale = 10;
+                    end
+                    % Not yet working
                     obj.outputDecBound = ...
-                         obj.decBound ...
-                         * (0-log(linspace(0, obj.decBound, ...
+                        obj.decBound ...
+                        * (0-log(linspace(0, obj.decBound, ...
                         obj.its)));
                     % Normalise up to decBound
                     obj.outputDecBound = ...
@@ -347,8 +346,8 @@ classdef DD < handle
                         % Set default (Linear decay, single point)
                         obj.decBound = params.decBound;
                         obj.decFunc = @(dbs,dbe,its,it) ...
-                           dbs - it*((dbs-dbe)/(its-1));
-
+                            dbs - it*((dbs-dbe)/(its-1));
+                        
                         obj.decFuncParams = [obj.decBound, 0, obj.its];
                         
                         % Defualt is linear, can preallocate but these
@@ -368,8 +367,7 @@ classdef DD < handle
                             num2str(pm), '), ']; %#ok<PROP,AGROW>
                     end
                     obj.evs = [evs, 'obj.it);']; %#ok<PROP>
-            
-                    % Here's a better way using varargin
+                    
             end
         end
         
@@ -422,11 +420,11 @@ classdef DD < handle
                     case 'ARGuass'
                         obj.output(i) = ...
                             obj.aLam*obj.output(i-1) + obj.aNoise(i); % A
-                    case 'Gareth1D';
+                    case 'Delta1D'
                         obj.output(i) = ...
                             obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
                             + obj.delta1(i); % S
-                    case 'Gareth2D'
+                    case 'Delta2D'
                         obj.output(1,i) = ...
                             obj.aLam.*obj.output(i-1) + obj.aNoise(i) ... A
                             + obj.delta1(i) + obj.delta2(i); % S
@@ -455,7 +453,7 @@ classdef DD < handle
                         
                     case 'Other'
                         obj.outputDecBound(i) = obj.decBound ...
-                            - std(obj.output(st:i))/sqrt(i-st);  
+                            - std(obj.output(st:i))/sqrt(i-st);
                     case 'Custom'
                         % Function defined in obj.decFunc
                         % Uses the params in obj.decFuncParams in order
@@ -472,8 +470,8 @@ classdef DD < handle
                         % );
                         
                         % Using evalString
-                    
-                    eval(obj.evs)
+                        
+                        eval(obj.evs)
                 end
                 
                 % Check decision boundaries
@@ -493,7 +491,7 @@ classdef DD < handle
                 end
                 
                 % Update plot
-                if obj.contPlot == 1 && ~mod(obj.it,obj.plotSpeed);
+                if obj.contPlot == 1 && ~mod(obj.it,obj.plotSpeed)
                     obj = obj.plotDD;
                 end
                 
@@ -516,7 +514,7 @@ classdef DD < handle
         end
         
         function obj = run(varargin) % Run all remaining steps or spec
-
+            
             obj = varargin{1};
             
             if numel(varargin) == 2 % Steps specified?
@@ -524,7 +522,7 @@ classdef DD < handle
             else % No, set defualts
                 steps = obj.its-obj.it; % Remaining
             end
-
+            
             obj = obj.iterate(steps);
             
         end
@@ -647,10 +645,12 @@ classdef DD < handle
                     scatter(obj.output(1:pr), DD2.output(1:pr))
                     hold on
                     plot(obj.output(1:pr), DD2.output(1:pr))
-                    line([obj.outputDecBound(pr), obj.outputDecBound(pr)], ...
+                    line([obj.outputDecBound(pr), ...
+                        obj.outputDecBound(pr)], ...
                         [0, obj.output(pr)]);
                     line([0, DD2.output(pr)], ...
-                        [DD2.outputDecBound(pr), DD2.outputDecBound(pr)]);
+                        [DD2.outputDecBound(pr), ...
+                        DD2.outputDecBound(pr)]);
                     % plot(obj.outputDecBound(1:pr), ...
                     %      DD2.outputDecBound(1:pr))
                     % plot(0-obj.outputDecBound(1:pr), ...
@@ -664,14 +664,14 @@ classdef DD < handle
                     
                     
                     % Plots up to max of complete its from each model
-            
-            % Plots up to max of what's been plotted so far
-            
-            maxAxP = max([obj.output(1:pr), DD2.output(1:pr), ...
-                obj.outputDecBound(pr), DD2.outputDecBound(pr)]);
-            minAxP = min([obj.output(1:pr), DD2.output(1:pr), ...
-                obj.outputDecBound(pr), DD2.outputDecBound(pr)]);
-            
+                    
+                    % Plots up to max of what's been plotted so far
+                    
+                    maxAxP = max([obj.output(1:pr), DD2.output(1:pr), ...
+                        obj.outputDecBound(pr), DD2.outputDecBound(pr)]);
+                    minAxP = min([obj.output(1:pr), DD2.output(1:pr), ...
+                        obj.outputDecBound(pr), DD2.outputDecBound(pr)]);
+                    
                     axis([minAxP, maxAxP, minAxP, maxAxP])
                     
                     % Modality 1 plot - calling object
@@ -699,8 +699,8 @@ classdef DD < handle
             end
             legend({'Stim. 1', 'Stim. 2'})
             
-            % Need to add decision bound checking 
-            % Set lines on graph to stop decreasing when modality decision 
+            % Need to add decision bound checking
+            % Set lines on graph to stop decreasing when modality decision
         end
         
         function obj = reset(obj) % Reset
@@ -725,7 +725,7 @@ classdef DD < handle
         end
         
     end
-        
+    
     methods (Static)
         function obj = setTestProp(x)
             disp('Setting testProp')

@@ -9,7 +9,7 @@ its = 300;
 %% Run accumulator 1
 
 % Params
-params1.model = 'Gareth2D';
+params1.model = 'Delta2D';
 params1.plotSpeed = 5;
 params1.its = its;
 params1.aSig = 0.25;
@@ -37,7 +37,7 @@ DD1 = DD1.run();
 %% Run accumulator 2
 % its = 500;
 % Params
-params2.model = 'Gareth2D';
+params2.model = 'Delta2D';
 params2.plotSpeed = 5;
 params2.its = its;
 params2.aSig = 0.1;
@@ -68,7 +68,7 @@ DD1.plotDD2(DD2)
 clear params3
 % its = 500;
 % Params
-params3.model = 'Gareth2D';
+params3.model = 'Delta2D';
 params3.plotSpeed = 5;
 params3.its = its;
 params3.aSig = 0.1;
@@ -96,7 +96,7 @@ DD3 = DD3.run(its);
 clear params4
 
 % Params
-params4.model = 'Gareth2D';
+params4.model = 'Delta2D';
 params4.plotSpeed = 5;
 params4.its = its;
 params4.aSig = 0.1;
