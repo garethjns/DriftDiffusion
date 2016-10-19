@@ -84,11 +84,11 @@ classdef multiDD
             
             % Check for and remove empty models
             keep = false(1, nM);
-            for m = 1:numel(mod)
+            for m = 1:numel(mods)
                 keep(m) = ~isempty(mods{m});
             end
             
-            obj.mods = mods;
+            obj.mods = mods(keep);
             
         end
         
