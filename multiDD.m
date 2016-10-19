@@ -1,4 +1,5 @@
 classdef multiDD
+<<<<<<< HEAD
     
     properties
         params
@@ -15,11 +16,19 @@ classdef multiDD
         multiDecType = 'Mean'
         finalDecMag
         finalDecBin
+=======
+   
+    properties
+        params
+        mods
+        nMods
+>>>>>>> origin/master
     end
     
     methods
         function obj = multiDD(varargin)
             % Inputs should be (DDMod, DDMod, ..., params)
+<<<<<<< HEAD
             % Or (DDModStruct, params)
             params = varargin{end};
             obj.params = params;
@@ -59,11 +68,23 @@ classdef multiDD
             % Make decision
             [obj.finalDecMag, obj.finalDecBin] = makeOverallDecision(obj);
             
+=======
+            obj.params = varargin{end};
+            nIn = numel(varargin)-1;
+            % Collect models
+            for n = 1:nIn
+               obj.mods.(['mod' , num2str(n)]) = varargin{n};
+            end
+            obj.nMods = nIn;
+            
+            obj = runAll(obj);
+>>>>>>> origin/master
         end
         
         function obj = runAll(obj)
             % For each modality
             for n = 1:obj.nMods
+<<<<<<< HEAD
                 % Get mod
                 m = obj.mods{n};
                 % Check finished
@@ -145,4 +166,27 @@ classdef multiDD
     methods (Static)
         
     end
+=======
+                mStr = ['mod', num2str(n)];
+                % Get mod
+                m = obj.(mStr);
+                % Check finished
+                if ~m.finished
+                    % If not, run to completion
+                    m.plotOn = 0;
+                    m = m.run();
+                end
+                obj.(mStr) = m;
+            end
+            
+        end
+        
+        function dec = lateDec(mod)
+            % Combine modality final decisions
+            
+        end
+        
+    end
+    
+>>>>>>> origin/master
 end
