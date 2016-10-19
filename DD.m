@@ -71,7 +71,10 @@ classdef DD < handle
         decFunc % Function to use for dec boundary
         decFuncParams % Params for specified function
         evs % Eval string for decFunc and params
-        testProp = DD.setTestProp
+        robust = 'Off'
+        robustFunc = @DD.robustNull;
+        robustOpts = struct;
+        testProp = DD.setTestProp % Ignore
     end
     
     properties (Constant = true)
@@ -112,6 +115,23 @@ classdef DD < handle
                 obj.plotSpeed = 2;
             end
             
+            % Set robust option
+            if ~isfield(params, 'robust')
+                % Already set as defaults
+                % obj.robust = 'off';
+                % obj.robustFunc = @obj.robustNull;
+                % obj.robustOpts = [];
+            else
+                obj.robust = params.robust;
+                switch lower(params.robust)
+                    case 'threshold'
+                        obj.robustFunc = @DD.robustThresh;
+                        obj.robustOpts = params.robustOpts;
+                    case 'linear'
+                    case 'exp'
+                end
+            end
+            
             % Has model been specified?
             % Also resets/preallocates .output using .its
             % And resets/sets the seed
@@ -146,6 +166,16 @@ classdef DD < handle
                 obj.aLam = params.aLam;
             else
                 obj.aLam = 1;
+            end
+            if isfield(params, 'sSig')
+                obj.sSig = params.sSig;
+            else
+                obj.sSig = 1;
+            end
+            if isfield(params, 'sMu')
+                obj.sMu = params.sMu;
+            else
+                obj.sMu = 1;
             end
             
             % Set model specific params
@@ -221,7 +251,10 @@ classdef DD < handle
                         NaN(1, obj.its);
                     
                     % Set up stim noise
-                    obj = obj.setStimNoise(obj, params);
+                    obj.sNoise1 = ...
+                        obj.generateStimNoise(obj.sMu, obj.sSig);
+                    obj.sNoise2 = [];
+                    
                     
                 case 'BB2D' % Brunton basic 2 direction
                     % Accumulator and sensory noise, stim input (1D)
@@ -421,23 +454,47 @@ classdef DD < handle
                     case 'ARGuass'
                         obj.output(i) = ...
                             obj.aLam*obj.output(i-1) + obj.aNoise(i); % A
-                    case 'Delta1D'
-                        obj.output(i) = ...
-                            obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
-                            + obj.delta1(i); % S
+                    case 'Delta1D' % Robust implemented
+                        % obj.output(i) = ...
+                        %     obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
+                        %     + obj.delta1(i); % S
+                        
+                        % Get value to add depending on robust settings
+                        addVal = ...
+                            obj.robustFunc(obj.aNoise(i), ...
+                            obj.delta1(i), '+', obj.robustOpts);
+                        
+                         obj.output(i) = ...
+                             obj.aLam*obj.output(i-1) + addVal;
+                        
                     case 'Delta2D'
                         obj.output(1,i) = ...
                             obj.aLam.*obj.output(i-1) + obj.aNoise(i) ... A
                             + obj.delta1(i) + obj.delta2(i); % S
-                    case 'BB1D'
+                    case 'BB1D' % Robust implemented
+                        % obj.output(i) = ...
+                        %     obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
+                        %    + obj.delta1(i)*obj.sNoise(i); % S
+
+                        addVal = ...
+                            obj.robustFunc(obj.sNoise1(i), ...
+                            obj.delta1(i), '*', obj.robustOpts);
+                        
+                        % Checking
+                        if obj.delta1(i)>0 && addVal == 0
+                           % keyboard 
+                        end
+                        
                         obj.output(i) = ...
-                            obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
-                            + obj.delta1(i)*obj.sNoise(i); % S
+                            obj.aLam*obj.output(i-1) + obj.aNoise(i) ...
+                            + addVal;
+                        
                     case 'BB2D' % Wrong - not implemented yet
                         obj.output(i) = ...
                             obj.aLam*obj.output(i-1) + obj.aNoise(i) ... A
                             +(obj.delta1(i)+obj.delta2(i))*obj.sNoise(i);%S
                     case 'BruntonFull'
+                        % Pass - not implemented yet
                 end
                 % Update it
                 obj.it = i;
@@ -738,5 +795,33 @@ classdef DD < handle
             disp('Setting testProp')
             obj.testProp = 'Set';
         end
+        
+        % 
+        function addVal = robustNull(delta, noise, trans, ~)
+            % Take delta(t) and noise(t)
+            % Return straight transform
+            % Either + or - depending on acc or sens noise
+            % Ignore any robustOpts input - should be empty
+            % Not sure how much sense applying robustness to + (ie. acc
+            % noise) makes, but it's possible.
+            switch trans
+                case '+'
+                    addVal = delta+noise;
+                case '*'
+                    addVal = delta*noise;
+            end
+        end
+        
+        function addVal = robustThresh(delta, noise, trans, robustOpts)
+            % Take delta(t) and noise(t)
+            % Return robust transform based on threshold option
+            
+            % First do normal operation
+            addVal = DD.robustNull(delta, noise, trans, []);
+            
+            % Then zero if |addVal| is < thresh
+            addVal(abs(addVal)<robustOpts.thresh) = 0;
+        end
+        
     end
 end

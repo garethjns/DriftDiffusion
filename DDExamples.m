@@ -123,3 +123,32 @@ DD4 = DD4.run(its);
 %% Plot together
 
 DD3.plotDD2(DD4)
+
+
+%% Run accumulator 5 - Robust
+
+% Params
+params5.model = 'BB1D';
+params5.plotSpeed = 5;
+params5.its = its;
+params5.aSig = 0.01;
+params5.sMu = 1;
+params5.sSig = 1;
+params5.aMu = 0;
+params5.aLam = 1;
+params5.fig = figure;
+
+
+params5.decBoundMode = 'Off';
+
+% params5.robust = 'Off'
+params5.robust = 'Threshold';
+params5.robustOpts.thresh = 0.6;
+
+% Stims
+stim5.delta1 = rand(1,its)>0.88; 
+
+% Create object
+DD5 = DD(params5, stim5);
+% Run object
+DD5 = DD5.run();
