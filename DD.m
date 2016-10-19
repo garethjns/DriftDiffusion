@@ -361,12 +361,12 @@ classdef DD < handle
                     % Create eval string - is there a better way to do
                     % this?
                     evs = ['obj.outputDecBound(obj.it) = ', ...
-                        'obj.decFunc(']; %#ok<PROP>
+                        'obj.decFunc(']; 
                     for pm = 1:length(obj.decFuncParams)
                         evs = [evs, 'obj.decFuncParams(', ...
-                            num2str(pm), '), ']; %#ok<PROP,AGROW>
+                            num2str(pm), '), ']; 
                     end
-                    obj.evs = [evs, 'obj.it);']; %#ok<PROP>
+                    obj.evs = [evs, 'obj.it);'];
                     
             end
         end
@@ -394,11 +394,12 @@ classdef DD < handle
         
         function delta = generateDelta(obj, prop, dir) % Generate stimulus
             % Direction = 1 or -1
-            if dir == 1
-                delta = (rand(1, obj.its) > prop);
-            else
-                delta = (0-(rand(1, obj.its) > prop));
-            end
+            % if dir == 1
+            %     delta = (rand(1, obj.its) > prop);
+            % else
+            %     delta = (0-(rand(1, obj.its) > prop));
+            % end
+            delta = dir * (rand(1, obj.its) > prop);
         end
         
         function sNoise = generateStimNoise(obj, sMu, sSig)
