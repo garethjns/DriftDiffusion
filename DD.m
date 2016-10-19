@@ -483,15 +483,15 @@ classdef DD < handle
                         || obj.dbReached == 1
                     
                     obj.dbReached = 1;
-                    obj.decMadeAt = obj.it;
                     if isnan(obj.dec) % First time?
+                        obj.decMadeAt = obj.it;
                         obj.dec = obj.output(i);
                     end
                     obj.output(i) = obj.dec;
                 end
                 
                 % Update plot
-                if obj.contPlot == 1 && ~mod(obj.it,obj.plotSpeed)
+                if obj.contPlot == 1 && ~mod(obj.it, obj.plotSpeed)
                     obj = obj.plotDD;
                 end
                 
@@ -508,6 +508,12 @@ classdef DD < handle
             % finished
             if obj.it == obj.its
                 obj.finished = 1;
+                % If decision bound hasn't been reached, set final decision
+                % values
+                if isnan(obj.dec) 
+                    obj.decMadeAt = obj.it;
+                    obj.dec = obj.output(obj.it);
+                end
             else
                 obj.finished = 0;
             end

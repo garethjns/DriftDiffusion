@@ -22,9 +22,9 @@ Models accumulation of uni or bi-directional sensory information and integration
 ## Classes
 
 - **DD.m** - Creates an object that can be used to run and plot a drift diffusion model over a specified number of iterations. 
-
 - **DDp.m** - (Not yet implemented fully)
 Creates a 'perpetual' DD model that can generate additional iterations as needed. No preallocation, all calculations done on each iteration so slower.
+- **multiDD.m** - Combines multiple DD objects in to multisensory/multimodal decision - not added yet.
 
 ## Usage
 
