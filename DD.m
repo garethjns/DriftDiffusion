@@ -504,7 +504,8 @@ classdef DD < handle
                     case 'Static'
                         obj.outputDecBound(i) = obj.decBound;
                     case 'SE'
-                        obj.outputDecBound(i) = (std(obj.output(st:i))/sqrt(i-st)) * 20;
+                        obj.outputDecBound(i) = ...
+                            (std(obj.output(st:i))/sqrt(i-st)) * 20;
                     case 'Linear'
                         % Already fully pre-iterated
                     case 'Exp'
@@ -800,7 +801,7 @@ classdef DD < handle
         function addVal = robustNull(delta, noise, trans, ~)
             % Take delta(t) and noise(t)
             % Return straight transform
-            % Either + or - depending on acc or sens noise
+            % Either + or - depending on if acc or sens noise
             % Ignore any robustOpts input - should be empty
             % Not sure how much sense applying robustness to + (ie. acc
             % noise) makes, but it's possible.
