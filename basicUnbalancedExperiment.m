@@ -51,7 +51,7 @@ for m = 1:nMods
             % Create multisensory decision
             % (Or unisensory if one modality is empty)
             paramsM.independentVar = rates;
-            DDMulti = multiDD(DD1, DD2, paramsM);
+            DDMulti = multiDD({DD1, DD2}, paramsM);
             
             % Save binary decision
             data(rep, r, m) = DDMulti.finalDecBin;
@@ -65,6 +65,7 @@ yErr = std(data)/sqrt(n);
 
 
 %% Plot
+
 figure
 hold on
 hPlot = gobjects(1, nMods);

@@ -75,6 +75,7 @@ classdef DD < handle
         robustFunc = @DD.robustNull;
         robustOpts = struct;
         testProp = DD.setTestProp % Ignore
+        template
     end
     
     properties (Constant = true)
@@ -83,6 +84,16 @@ classdef DD < handle
     
     methods
         function obj = DD(params, stim) % Initialise
+            if isfield(params, 'template') && ~isempty(params.template)
+               % A template has been specified
+               % Apply the template paramaters, overwriting those already
+               % in params
+               % Then continue to set params as specified, or as default
+               params = obj.setTemplate(params);
+               obj.template = params.template;
+            else
+                obj.template = 'Custom';
+            end
             obj.initialParams = params;
             
             % Has number of iterations been specified?
@@ -795,6 +806,89 @@ classdef DD < handle
         function obj = setTestProp(x)
             disp('Setting testProp')
             obj.testProp = 'Set';
+        end
+        
+       
+        function params = setTemplate(params)
+            % Set template - static for external access
+            % Sets all parameters for specified template
+            % Can be called from outside to set template, then replace
+            % paramaters as needed before object creation
+            switch params.template
+                case 'Delta2D_CustomLin'
+                    % Sensory information in two directions
+                    % Accumulator noise (no sensory noise)
+                    % Linearly decaying decision bounds (custom function
+                    % example)
+
+                    % Params
+                    params.model = 'Delta2D'; % Accumulator model
+                    params.plotSpeed = 5; % Plot every x iterations
+                    params.its = 200;
+                    params.aSig = 0.25; % Accumulator noise magnitude
+                    params.aMu = 0;  % Accumulator noise bias
+                    params.aLam = 1; % Autoregressive parameter (0<1, accumulator becomes leaky)
+                    params.fig = figure;
+                    % params1.decBoundMode = 'SE';
+                    % params1.decBoundSEMulti = 2000;
+                    % params1.decBoundMode = 'Static';
+                    params.decBound = 50; % Initial decision bound magnitude
+                    % The decision bounds in this example decay linearlly, which can be
+                    % specified with .decBoundMode = 'Linear'. However, below is an example of
+                    % doing the same thing by specifying a custom function.
+                    params.decBoundMode = 'Custom';
+                    params.decFunc = @(dbs,dbe,its,it) ...
+                        dbs - it*((dbs-dbe)/(its-1));
+                    params.decFuncParams = [params.decBound, 0, params.its];
+                case 'Delta2D_SE'
+                    % Sensory information in two directions
+                    % Accumulator noise (no sensory noise)
+                    % SE decision bounds
+                    
+                    params.model = 'Delta2D';
+                    params.plotSpeed = 5;
+                    params.its = 200;
+                    params.aSig = 0.1;
+                    params.aMu = 0;
+                    params.aLam = 1;
+                    params.fig = figure;
+                    params.decBoundMode = 'SE';
+                    params.decBoundSEMulti = 1000;
+                case 'Delta2D'
+                    % Sensory information in two directions
+                    % Accumulator noise (no sensory noise)
+                    % No decision bounds
+                    params.model = 'Delta2D';
+                    params.plotSpeed = 5;
+                    params.its = 200;
+                    params.aSig = 0.1;
+                    params.aMu = 0;
+                    params.aLam = 1;
+                    params.fig = figure;
+                case 'BB1D_Robust'
+                    % Stimulus in one direction
+                    % Brunton 2013 model, without adaptaion
+                    % No decision bounds
+                    % Adds robustness to accumulator
+                    
+                    % Params
+                    params.model = 'BB1D';
+                    params.plotSpeed = 5;
+                    params.its = 200;
+                    params.aSig = 0.01;
+                    params.sMu = 1;
+                    params.sSig = 1;
+                    params.aMu = 0;
+                    params.aLam = 1;
+                    params.fig = figure;
+                    
+                    params.decBoundMode = 'Off';
+                    
+                    params.robust = 'Threshold';
+                    params.robustOpts.thresh = 0.6;
+            end
+            
+            
         end
         
         % 

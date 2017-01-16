@@ -2,12 +2,12 @@ classdef multiDD
     
     properties
         params
-        mods
+        mods = cell(1);
         nMods
         decType = 'Mean'
         mags % Individual (modality) decision mags
         RTs % Individual (modality) decision RT (in pts)
-        bins % Individual (modality) binary decision
+        bins % Individual (modality) binary decision 
         conf % Individual decision confidence of modality
         decConfMode = 'Var' % For indv dec, varience or distance
         independentVar = [] %
@@ -18,10 +18,13 @@ classdef multiDD
     end
     
     methods
-        function obj = multiDD(mods, params)
-            % Inputs should be (mods (cell or struct), params)
+        function obj = multiDD(varargin)
+            % Inputs should be (DDMod, DDMod, ..., params)
             % Or (DDModStruct, params)
+            params = varargin{end};
             obj.params = params;
+            nIn = numel(varargin)-1;
+            mods = varargin(1:nIn);
             
             % Set models using set.mods
             obj.mods = mods;
@@ -75,17 +78,17 @@ classdef multiDD
         
         function obj = set.mods(obj, mods)
             if isa(mods, 'struct')
-                mods = struct2cell(mods)';
+                mods = struct2cell(mods);
             end
             nM = numel(mods);
             
             % Check for and remove empty models
             keep = false(1, nM);
-            for m = 1:numel(mods)
-                keep(m) = ~isempty(mods{m});
+            for m = 1:numel(mod)
+                keep(m) = ~isempty(mods{m})
             end
             
-            obj.mods = mods(keep);
+            obj.mods = mods;
             
         end
         
@@ -123,7 +126,7 @@ classdef multiDD
             % Using the information from the available modalities, make a
             % overall, multisensory, decision
             switch obj.multiDecType
-                case {'Max', 'max'}
+                case {'Max', 'max'} 
                     % Go with max (abs) mag
                 case {'weightedMean'}
                     % Mean of mags, weighted by confidence
