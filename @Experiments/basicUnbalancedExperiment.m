@@ -1,4 +1,4 @@
-function [y, yErr] = BBUnbalancedExperiment(rates, n, modalities)
+function [y, yErr] = basicUnbalancedExperiment(rates, n, modalities)
 
 
 nRates = numel(rates);
@@ -9,12 +9,10 @@ stimLength = 1000;
 % General DD params
 paramsDD.contPlot = 1;
 paramsDD.plotSpeed = 20;
-paramsDD.aMu = 0.01;
+paramsDD.aMu = 0;
 paramsDD.aLam = 1;
-paramsDD.sMu = 1;
-paramsDD.sSig = 0.5;
 paramsDD.fig = [];
-paramsDD.model = 'BB1D';
+paramsDD.model = 'Delta1D';
 paramsDD.its = stimLength;
 
 % "Fast" response, n x rate
@@ -31,7 +29,7 @@ for m = 1:nMods
                 stim1.delta1(randi(stimLength,1,rates(r))) = 1;
                 % Create
                 params1 = paramsDD;
-                params1.sSig = 1;
+                params1.aSig = 0.1;
                 DD1 = DD(params1, stim1);
             else
                 DD1 = [];
@@ -44,7 +42,7 @@ for m = 1:nMods
                 stim2.delta1(randi(stimLength,1,rates(r))) = 1;
                 % Create
                 params2 = paramsDD;
-                params2.sSig = 0.5;
+                params2.aSig = 0.2;
                 DD2 = DD(params2, stim2);
             else
                 DD2 = [];
@@ -53,7 +51,7 @@ for m = 1:nMods
             % Create multisensory decision
             % (Or unisensory if one modality is empty)
             paramsM.independentVar = rates;
-            DDMulti = multiDD(DD1, DD2, paramsM);
+            DDMulti = MultiDD({DD1, DD2}, paramsM);
             
             % Save binary decision
             data(rep, r, m) = DDMulti.finalDecBin;
@@ -67,6 +65,7 @@ yErr = std(data)/sqrt(n);
 
 
 %% Plot
+
 figure
 hold on
 hPlot = gobjects(1, nMods);
@@ -90,3 +89,4 @@ axis([min(rates)-1, max(rates)+1, 0, 1])
 legend(hPlot, legText)
 xlabel('Stimulus rate')
 ylabel('Proportion of "fast" responses')
+

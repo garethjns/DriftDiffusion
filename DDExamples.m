@@ -65,8 +65,9 @@ stim2.delta2 = 0-(rand(1,its)>0.99);
 
 % Create object
 DD2 = DD(params2, stim2);
-% Run objec
+% Run object
 DD2 = DD2.run(its);
+
 
 %% Plot together
 % Two DD objects can be plotted together
@@ -91,12 +92,13 @@ params3.fig = figure;
 
 % Stims
 stim3.delta1 = rand(1,its)>0.87;
-stim3.delta2 = 0-(rand(1,its)>0.99);
+stim3.delta2 = 0-(rand(1,its)>0.80);
 
 % Create object
 DD3 = DD(params3, stim3);
-% Run objec
+% Run object
 DD3 = DD3.run(its);
+
 
 %% Run accumulator 4
 % Sensory information in two directions
@@ -126,7 +128,7 @@ stim4.delta2 = 0-(rand(1,its)>0.99);
 
 % Create object
 DD4 = DD(params4, stim4);
-% Run objec
+% Run object
 DD4 = DD4.run(its);
 
 %% Plot together

@@ -1,6 +1,9 @@
 %% MultiDD
 % Create a multisensory decision based on unisensory accumulators
 % Uses
+
+its = 300;
+
 params.treshold = 10;
 
 clear mods
@@ -20,7 +23,7 @@ mods.DD2 = DD(params, stim2);
 
 % Create multiseosnry model
 % (and run to deicsion)
-mulMod = multiDD(mods, params);
+mulMod = MultiDD(mods, params);
 
 % Print available methods
 methodsview(mulMod);
@@ -35,7 +38,7 @@ display(mulMod)
 n = 25;
 rates = [6, 7, 8, 9, 10, 11, 12, 13];
 modalities  = 3; % 3 = AV
-[y, yErr] = basicExperiment(rates, n, modalities);
+[y, yErr] = Experiments.basicExperiment(rates, n, modalities);
 
 
 %% Run basic uni and multi-sensory experiment
@@ -44,7 +47,7 @@ modalities  = 3; % 3 = AV
 n = 500;
 rates = [6, 7, 8, 9, 10, 11, 12, 13];
 modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
-[y, yErr] = basicExperiment(rates, n, modalities);
+[y, yErr] = Experiments.basicExperiment(rates, n, modalities);
 
 
 %% Run unbalanced, basic uni and multi-sensory experiment 
@@ -54,7 +57,7 @@ modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
 n = 500;
 rates = [6, 7, 8, 9, 10, 11, 12, 13];
 modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
-[y, yErr] = basicUnbalancedExperiment(rates, n, modalities);
+[y, yErr] = Experiments.basicUnbalancedExperiment(rates, n, modalities);
 
 
 %% Run BB uni and multi-sensory experiment - not working yet
@@ -63,7 +66,7 @@ modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
 n = 500;
 rates = [6, 7, 8, 9, 10, 11, 12, 13];
 modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
-[y, yErr] = BBExperiment(rates, n, modalities);
+[y, yErr] = Experiments.BBExperiment(rates, n, modalities);
 
 
 %% Run unbalanced, BB uni and multi-sensory experiment - not working yet
@@ -72,4 +75,4 @@ modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
 n = 100;
 rates = [6, 7, 8, 9, 10, 11, 12, 13];
 modalities  = [1, 2, 3]; % 1 = "Auditory", 2 = "visual", 3 = AV
-[y, yErr] = BBExperiment(rates, n, modalities);
+[y, yErr] = Experiments.BBExperiment(rates, n, modalities);

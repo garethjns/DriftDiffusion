@@ -1,4 +1,4 @@
-classdef multiDD
+classdef MultiDD
     
     properties
         params
@@ -18,7 +18,7 @@ classdef multiDD
     end
     
     methods
-        function obj = multiDD(mods, params)
+        function obj = MultiDD(mods, params)
             % Inputs should be (mods (cell or struct), params)
             % Or (DDModStruct, params)
             obj.params = params;
